@@ -419,6 +419,13 @@ Note: the _really_ old formats (<= 0.9.4) are not supported."
 (define-crypto-function ("BIO_new" bio-new)
     :pointer
   (method :pointer))
+(define-crypto-function ("BIO_new_mem_buf" bio-new-mem-buf)
+  :pointer
+  (buf :pointer)
+  (len :int))
+(define-crypto-function ("BIO_free" bio-free)
+  :int
+  (bio :pointer))
 
 (define-crypto-function ("ERR_get_error" err-get-error)
     :unsigned-long)
@@ -621,6 +628,13 @@ Note: the _really_ old formats (<= 0.9.4) are not supported."
   (*px :pointer)
   (in :pointer)
   (len :int))
+
+(define-crypto-function ("PEM_read_bio_X509" pem-read-bio-x509)
+  :pointer
+  (bio :pointer)
+  (x509 :pointer)
+  (password :pointer)
+  (u :pointer))
 
 ;; GENERAL-NAME types
 (defconstant +GEN-OTHERNAME+  0)

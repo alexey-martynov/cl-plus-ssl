@@ -176,6 +176,18 @@ we are going to pass them to CFFI:WITH-POINTER-TO-VECTOR-DATA)"))
           (error 'ssl-error-call :message "d2i-X509 failed" :queue (read-ssl-error-queue)))
         cert))))
 
+(defmethod decode-certificate ((format (eql :pem)) bytes)
+  (cffi:with-pointer-to-vector-data (buf* bytes)
+    (cffi:with-foreign-object (buf** :pointer)
+      (setf (cffi:mem-ref buf** :pointer) buf*)
+      (let ((bio (bio-new-mem-buf buf* (length bytes))))
+        (unwind-protect
+             (let ((cert (pem-read-bio-x509 bio (cffi:null-pointer) (cffi:null-pointer) (cffi:null-pointer))))
+               (when (cffi:null-pointer-p cert)
+                 (error 'ssl-error-call :message "PEM_read_bio_X509 failed" :queue (read-ssl-error-queue)))
+               cert)
+          (bio-free bio))))))
+
 (defun cert-format-from-path (path)
   ;; or match "pem" type too and raise unknown format error?
   (if (equal "der" (pathname-type path))
