@@ -65,6 +65,9 @@
            #:certificate-not-after-time
            #:certificate-not-before-time
            #:certificate-subject-common-names
+           #:certificate-issuer-common-names
+           #:certificate-dns-alt-names
+
 
            ;; hostname-verification
            #:verify-hostname))

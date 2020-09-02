@@ -279,3 +279,28 @@ which the certificate is not valid."
     (when (cffi:null-pointer-p asn1-time)
       (error "X509_get0_notBefore returned NULL"))
     (decode-asn1-utctime asn1-time)))
+
+(defun certificate-issuer-common-names (cert)
+  (let ((i -1)
+        (issuer-name (x509-get-issuer-name cert)))
+    (when (cffi:null-pointer-p issuer-name)
+      (error "X509_get_issuer_name returned NULL"))
+    (flet ((extract-cn ()
+             (setf i (x509-name-get-index-by-nid issuer-name +NID-commonName+ i))
+             (when (>= i 0)
+               (let* ((entry (x509-name-get-entry issuer-name i)))
+                 (when (cffi:null-pointer-p entry)
+                   (error "X509_NAME_get_entry returned NULL"))
+                 (let ((entry-data (x509-name-entry-get-data entry)))
+                   (when (cffi:null-pointer-p entry-data)
+                     (error "X509_NAME_ENTRY_get_data returned NULL"))
+                   (try-get-asn1-string-data entry-data '(#.+v-asn1-utf8string+
+                                                          #.+v-asn1-bmpstring+
+                                                          #.+v-asn1-printablestring+
+                                                          #.+v-asn1-universalstring+
+                                                          #.+v-asn1-teletexstring+)))))))
+      (loop
+         as cn = (extract-cn)
+         if cn collect cn
+         if (not cn) do
+           (loop-finish)))))

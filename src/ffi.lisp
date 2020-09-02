@@ -638,6 +638,7 @@ Note: the _really_ old formats (<= 0.9.4) are not supported."
 (defconstant +v-asn1-printablestring+ 19)
 (defconstant +v-asn1-teletexstring+ 20)
 (defconstant +v-asn1-iastring+ 22)
+(defconstant +v-asn1-utctime+ 23)
 (defconstant +v-asn1-universalstring+ 28)
 (defconstant +v-asn1-bmpstring+ 30)
 
@@ -685,6 +686,18 @@ Note: the _really_ old formats (<= 0.9.4) are not supported."
     :void
   (general-names :pointer))
 
+(define-crypto-function ("ASN1_STRING_type_new" asn1-string-type-new)
+    :pointer
+  (type :int))
+
+(define-crypto-function ("ASN1_STRING_free" asn1-string-free)
+    :void
+  (asn1-string :pointer))
+
+(define-crypto-function ("ASN1_STRING_new" asn1-string-new)
+    :pointer
+  (asn1-string :pointer))
+
 (define-crypto-function ("ASN1_STRING_data" asn1-string-data)
     :pointer
   (asn1-string :pointer))
@@ -696,6 +709,24 @@ Note: the _really_ old formats (<= 0.9.4) are not supported."
 (define-crypto-function ("ASN1_STRING_type" asn1-string-type)
     :int
   (asn1-string :pointer))
+
+(define-crypto-function ("ASN1_STRING_set" asn1-string-set)
+    :int
+  (asn1-time :pointer)
+  (string :string)
+  (len :int))
+
+(define-crypto-function ("ASN1_TIME_set_string" asn1-time-set-string)
+    :int
+  (asn1-time :pointer)
+  (string :string))
+
+(define-crypto-function ("ASN1_TIME_diff" asn1-time-diff)
+    :int
+  (days (:pointer :int))
+  (seconds (:pointer :int))
+  (asn1-time-from :pointer)
+  (asn1-time-to :pointer))
 
 (cffi:defcstruct asn1_string_st
   (length :int)
