@@ -636,6 +636,23 @@ Note: the _really_ old formats (<= 0.9.4) are not supported."
   (password :pointer)
   (u :pointer))
 
+(define-crypto-function ("X509_check_private_key" x509-check-private-key)
+  :int
+  (x509 :pointer)
+  (evp-pkey :pointer))
+
+;; Private Key
+(define-crypto-function ("EVP_PKEY_free" evp-pkey-free)
+  :void
+  (evp-pkey :pointer))
+
+(define-crypto-function ("PEM_read_bio_PrivateKey" pem-read-bio-PrivateKey)
+  :pointer
+  (bio :pointer)
+  (evp-pkey :pointer)
+  (password :pointer)
+  (u :pointer))
+
 ;; GENERAL-NAME types
 (defconstant +GEN-OTHERNAME+  0)
 (defconstant +GEN-EMAIL+  1)

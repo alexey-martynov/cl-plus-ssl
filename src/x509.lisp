@@ -188,7 +188,7 @@ we are going to pass them to CFFI:WITH-POINTER-TO-VECTOR-DATA)"))
                cert)
           (bio-free bio))))))
 
-(defun cert-format-from-path (path)
+(defun certificate-format-from-path (path)
   ;; or match "pem" type too and raise unknown format error?
   (if (equal "der" (pathname-type path))
       :der
@@ -197,7 +197,7 @@ we are going to pass them to CFFI:WITH-POINTER-TO-VECTOR-DATA)"))
 (defun decode-certificate-from-file (path &key format)
   (let ((bytes (with-open-file (stream path :element-type '(unsigned-byte 8))
                  (slurp-stream stream)))
-        (format (or format (cert-format-from-path path))))
+        (format (or format (certificate-format-from-path path))))
     (decode-certificate format bytes)))
 
 (defun certificate-alt-names (cert)
@@ -316,3 +316,33 @@ which the certificate is not valid."
          if cn collect cn
          if (not cn) do
            (loop-finish)))))
+
+
+(defgeneric decode-private-key (format bytes)
+  (:documentation
+   "The BYTES must be created by CFFI:MAKE-SHAREABLE-BYTE-VECTOR (because
+we are going to pass them to CFFI:WITH-POINTER-TO-VECTOR-DATA)"))
+
+(defmethod decode-private-key ((format (eql :pem)) bytes)
+  (cffi:with-pointer-to-vector-data (buf* bytes)
+    (cffi:with-foreign-object (buf** :pointer)
+      (setf (cffi:mem-ref buf** :pointer) buf*)
+      (let ((bio (bio-new-mem-buf buf* (length bytes))))
+        (unwind-protect
+             (let ((key (pem-read-bio-privatekey bio (cffi:null-pointer) (cffi:null-pointer) (cffi:null-pointer))))
+               (when (cffi:null-pointer-p key)
+                 (error 'ssl-error-call :message "PEM_read_bio_X509 failed" :queue (read-ssl-error-queue)))
+               key)
+          (bio-free bio))))))
+
+(defun private-key-format-from-path (path)
+  ;; or match "pem" type too and raise unknown format error?
+  (if (equal "pem" (pathname-type path))
+      :pem
+      :unknown))
+
+(defun decode-private-key-from-file (path &key format)
+  (let ((bytes (with-open-file (stream path :element-type '(unsigned-byte 8))
+                 (slurp-stream stream)))
+        (format (or format (private-key-format-from-path path))))
+    (decode-private-key format bytes)))

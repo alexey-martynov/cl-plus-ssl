@@ -59,6 +59,7 @@
            #:with-global-context
 
            ;; x509 stuff
+           #:certificate-format-from-path
            #:decode-certificate-from-file
            #:decode-certificate
            #:ssl-stream-x509-certificate
@@ -68,6 +69,13 @@
            #:certificate-issuer-common-names
            #:certificate-dns-alt-names
 
+           #:x509-check-private-key
+           #:x509-free
+
+           ;; Private key stuff
+           #:private-key-format-from-path
+           #:decode-private-key-from-file
+           #:evp-pkey-free
 
            ;; hostname-verification
            #:verify-hostname))
