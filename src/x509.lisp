@@ -317,6 +317,12 @@ which the certificate is not valid."
          if (not cn) do
            (loop-finish)))))
 
+(defun certificate-thumbprint (cert)
+  (cffi:with-foreign-objects ((buffer :uint8 64)
+                              (len :int))
+    (x509-digest cert (evp-sha1) buffer len)
+    (loop for i below (cffi:mem-ref len :int)
+          collect (cffi:mem-aref buffer :uint8 i))))
 
 (defgeneric decode-private-key (format bytes)
   (:documentation

@@ -641,6 +641,13 @@ Note: the _really_ old formats (<= 0.9.4) are not supported."
   (x509 :pointer)
   (evp-pkey :pointer))
 
+(define-crypto-function ("X509_digest" x509-digest)
+  :int
+  (x509 :pointer)
+  (type :pointer)
+  (digest :pointer)
+  (len :pointer))
+
 ;; Private Key
 (define-crypto-function ("EVP_PKEY_free" evp-pkey-free)
   :void
@@ -652,6 +659,9 @@ Note: the _really_ old formats (<= 0.9.4) are not supported."
   (evp-pkey :pointer)
   (password :pointer)
   (u :pointer))
+
+(define-crypto-function ("EVP_sha1" evp-sha1)
+  :pointer)
 
 ;; GENERAL-NAME types
 (defconstant +GEN-OTHERNAME+  0)

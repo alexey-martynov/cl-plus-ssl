@@ -68,7 +68,7 @@
            #:certificate-subject-common-names
            #:certificate-issuer-common-names
            #:certificate-dns-alt-names
-
+           #:certificate-thumbprint
            #:x509-check-private-key
            #:x509-free
 
